@@ -1,0 +1,57 @@
+
+const http = require("http");
+const nodemailer = require('nodemailer');
+
+
+
+// a basic http server with get/post requests handlers on path /
+
+const server = http.createServer(function (req, res) {
+  let data = "";
+  req.on("data", function (chunk) {
+    data += chunk;
+  });
+
+  req.on("end", function () {
+    console.log(data)
+    const body = JSON.parse(data);
+    const EMAIL = "emnasamchi26@gmail.com";
+const PASS = "brjf pfgt cvwr jtdb";
+    console.log(body)
+    var transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: EMAIL,
+          pass: PASS
+        }
+      });
+    const mailOptions = {
+      from: EMAIL,
+      to: body.email,
+      subject: "Nice Nodemailer test",
+      html: "<b>Hey there! </b><br> "+body.message + "  😉 ",
+    };
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+          console.log(error);
+          const html = "<h1>Server Error!!!</h1>\n";
+          res.writeHead(500, { "Content-Type": "text/html" });
+          res.write(html);
+          res.end();
+        } else {
+            const html = "<h1> hello node !!!</h1>\n";
+            res.writeHead(200, { "Content-Type": "text/html" });
+            res.write(html);
+          
+            res.end();
+          console.log('Email sent: ' + info.response);
+        }
+      });
+  });
+
+
+});
+
+server.listen(3000, function () {
+  console.log("litening on 3000");
+});
